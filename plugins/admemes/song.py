@@ -25,7 +25,7 @@ def time_to_seconds(time):
     return sum(int(x) * 60 ** i for i, x in enumerate(reversed(stringt.split(':'))))
 
 
-@Client.on_message(filters.command('song') & ~filters.private & ~filters.channel)
+@Client.on_message(filters.command('s') & ~filters.private & ~filters.channel)
 def song(client, message):
 
     user_id = message.from_user.id 
@@ -47,9 +47,13 @@ def song(client, message):
         thumb_name = f'thumb{title}.jpg'
         thumb = requests.get(thumbnail, allow_redirects=True)
         open(thumb_name, 'wb').write(thumb.content)
+        
+         ## UNCOMMENT THIS IF YOU WANT A LIMIT ON DURATION. CHANGE 1800 TO YOUR OWN PREFFERED DURATION AND EDIT THE MESSAGE (30 minutes cap) LIMIT IN SECONDS
+             # if time_to_seconds(duration) >= 3600:  # duration limit
+                  # m.edit("Exceeded 30mins cap")
+                  # eturn
 
-
-        performer = f"[ᗩᒍᗩ᙭]" 
+        performer = f"[Rebekah]" 
         duration = results[0]["duration"]
         url_suffix = results[0]["url_suffix"]
         views = results[0]["views"]
@@ -66,12 +70,12 @@ def song(client, message):
             info_dict = ydl.extract_info(link, download=False)
             audio_file = ydl.prepare_filename(info_dict)
             ydl.process_info(info_dict)
-        rep = '**𝚂𝚄𝙱𝚂𝙲𝚁𝙸𝙱𝙴 ›› [𝙾𝙿𝚄𝚂-𝚃𝙴𝙲𝙷𝚉](https://youtube.com/channel/UCf_dVNrilcT0V2R--HbYpMA)**\n**𝙿𝙾𝚆𝙴𝚁𝙴𝙳 𝙱𝚈 ›› [muѕíc вσч](https://t.me/OPMusicBoy_Bot)**'
+        rep = f'**🎶 𝐓𝐈𝐓𝐋𝐄 ›› {title}\n 𝐃𝐔𝐑𝐀𝐓𝐈𝐎𝐍 ›› {duration}**\n **𝐌𝐀𝐃𝐄 𝐁𝐘 ›› [❤️](tg://settings)**\n** 𝐏𝐎𝐖𝐄𝐑𝐄𝐃 𝐁𝐘 ›› [ℝ𝕖𝕓𝕖𝕜𝕒𝕙](https://t.me/MM_Rebekah_bot)**'
         secmul, dur, dur_arr = 1, 0, duration.split(':')
         for i in range(len(dur_arr)-1, -1, -1):
             dur += (int(dur_arr[i]) * secmul)
             secmul *= 60
-        message.reply_audio(audio_file, caption=rep, parse_mode='md',quote=False, title=title, duration=dur, performer=performer, thumb=thumb_name)
+        message.reply_audio(audio_file, caption=rep, parse_mode='md',quote=False, title=title, duration=dur, performer=performer, reply_to_message_id=message.message_id, thumb=thumb_name)
         m.delete()
     except Exception as e:
         m.edit("**🚫 𝙴𝚁𝚁𝙾𝚁 🚫**")
@@ -155,4 +159,3 @@ async def vsong(client, message: Message):
     for files in (sedlyf, file_stark):
         if files and os.path.exists(files):
             os.remove(files)
-
