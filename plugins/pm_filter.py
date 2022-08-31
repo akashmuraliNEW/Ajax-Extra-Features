@@ -520,7 +520,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                 f_caption = f_caption
         if f_caption is None:
             f_caption = f"{title}"
-         buttons = [
+        buttons = [
             [
                 InlineKeyboardButton('🤖𓂀 ℍ𝕆𝕎 𝕋𝕆 𝔻𝕆𝕎ℕ𝕃𝕆𝔸𝔻 𓂀🤖', url=f'https://t.me/rebekahbot1/3')
             ]
