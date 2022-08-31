@@ -248,8 +248,7 @@ async def advantage_spoll_choker(bot, query):
             k = (movie, files, offset, total_results)
             await auto_filter(bot, query, k)
         else:
-            one_button = InlineKeyboardMarkup([[InlineKeyboardButton("🥲 𝗢𝗪𝗡𝗘𝗥", url="https://t.me/HELLGaM"), InlineKeyboardButton("🔍𝗚𝗢𝗢𝗚𝗟𝗘 🔍", url="https://www.google.com/")]])
-            k = await msg.reply_video(video="https://telegra.ph//file/d90256b1575c7aaadccc5.mp4", caption='⭕Given Movie/Tv Series is not found in bot!⭕\n☞ 🎭 REASONS 👇\n☞ Incorrect spelling. try again with correct spelling\n☞ No special characters or symbols\n☞ Movie not released\n☞ NO cam prints\n☞ HD files mathreme bot ill upload chyu vro\n☞ contact admin if its an old movie to add in bot @HELL_GaM 💌", reply_markup = one_button)
+            k = await query.message.edit('⭕Given Movie/Tv Series is not found in bot!⭕\n☞ 🎭 REASONS 👇\n☞ Incorrect spelling. try again with correct spelling\n☞ No special characters or symbols\n☞ Movie not released\n☞ NO cam prints\n☞ HD files mathreme bot ill upload chyu vro\n☞ contact admin if its an old movie to add in bot @HELL_GaM💌')
             await asyncio.sleep(10)
             await k.delete()
 
