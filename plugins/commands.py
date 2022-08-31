@@ -8,7 +8,7 @@ from pyrogram.errors import ChatAdminRequired, FloodWait
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from database.ia_filterdb import Media, get_file_details, unpack_new_file_id
 from database.users_chats_db import db
-from info import CHANNELS, ADMINS, AUTH_CHANNEL, LOG_CHANNEL, PICS, CUSTOM_FILE_CAPTION, BATCH_FILE_CAPTION, PROTECT_CONTENT
+from info import CHANNELS, ADMINS, AUTH_CHANNEL, LOG_CHANNEL, PICS, CUSTOM_FILE_CAPTION, BATCH_FILE_CAPTION, PROTECT_CONTENT, START_MESSAGE, FORCE_SUB_TEXT, SUPPORT_CHAT
 from utils import get_settings, get_size, is_subscribed, save_group_settings, temp
 from database.connections_mdb import active_connection
 import re
@@ -22,37 +22,40 @@ BATCH_FILES = {}
 async def start(client, message):
     if message.chat.type in ['group', 'supergroup']:
         buttons = [
-            [
-                InlineKeyboardButton('𝙿𝚁𝙸𝚅𝙰𝚃𝙴 𝙱𝙾𝚃', url=f"https://t.me/AboutAadhi")
+             [
+                InlineKeyboardButton('𝐇𝐄𝐋𝐏', url=f"https://t.me/{temp.U_NAME}?start=help")
             ]
             ]
         reply_markup = InlineKeyboardMarkup(buttons)
-        await message.reply(script.PRIVATEBOT_TXT.format(message.from_user.mention if message.from_user else message.chat.title, temp.U_NAME, temp.B_NAME), reply_markup=reply_markup)
-        await asyncio.sleep(2) # 😢 https://github.com/Aadhi000/Ajax-Extra-Features/blob/master/plugins/p_ttishow.py#L17 😬 wait a bit, before checking.
+        disable_web_page_preview = True,
+        a = await message.reply(script.PRIVATEBOT_TXT.format(message.from_user.mention if message.from_user else message.chat.title, temp.B_LINK), reply_markup=reply_markup)
+        await asyncio.sleep(10)
+        await message.delete()
+        await a.delete()
         if not await db.get_chat(message.chat.id):
             total=await client.get_chat_members_count(message.chat.id)
-            await client.send_message(LOG_CHANNEL, script.LOG_TEXT_G.format(message.chat.title, message.chat.id, total, "Unknown"))       
-            await db.add_chat(message.chat.id, message.chat.title)
+            await client.send_message(LOG_CHANNEL, script.LOG_TEXT_G.format(message.chat.title, message.chat.id, message.chat.username, total, temp.U_NAME, "Unknown"))       
+            await db.add_chat(message.chat.id, message.chat.title, message.chat.username)
         return 
     if not await db.is_user_exist(message.from_user.id):
         await db.add_user(message.from_user.id, message.from_user.first_name)
-        await client.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(message.from_user.id, message.from_user.mention))
-    if len(message.command) != 2:
+        await client.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(message.from_user.id, message.from_user.mention, message.from_user.username, temp.U_NAME))
+    if len(message.command) != 2: 
         buttons = [[
-            InlineKeyboardButton('⚚ ΛᎠᎠ MΞ ϮԾ YԾUᏒ GᏒԾUᎮ ⚚', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
-            ],[
-            InlineKeyboardButton('💠 CHΛИИΞL 💠', url='https://t.me/MWUpdatez'),
-            InlineKeyboardButton('💠 UᎮDΛTΞS 💠', url='https://t.me/OpusTechz')
+            InlineKeyboardButton('➕ 𝐀𝐃𝐃 𝐌𝐄 𝐓𝐎 𝐘𝐎𝐔𝐑 𝐆𝐑𝐎𝐔𝐏 ➕', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
             ],[      
-            InlineKeyboardButton('♻️ HΞLᎮ ♻️', callback_data='help'),
-            InlineKeyboardButton('♻️ ΛBOUT ♻️', callback_data='about')
+            InlineKeyboardButton('ℹ️ 𝐇𝐄𝐋𝐏', callback_data='help'),
             ],[
-            InlineKeyboardButton('✅ SUBSCᏒIBΞ  ✅', url='https://youtube.com/channel/UCf_dVNrilcT0V2R--HbYpMA')
-        ]]         
-        reply_markup = InlineKeyboardMarkup(buttons)        
+            InlineKeyboardButton('❈ 𝐎𝐖𝐍𝐄𝐑 ❈', url='https://t.me/HELL_GaM')
+        ]]       
+        reply_markup = InlineKeyboardMarkup(buttons)      
+        await message.reply_chat_action("Typing")
+        m=await message.reply_sticker("CAACAgUAAxkBAAIFNGJSlfOErbkSeLt9SnOniU-58UUBAAKaAAPIlGQULGXh4VzvJWoeBA") 
+        await asyncio.sleep(1)
+        await m.delete()        
         await message.reply_photo(
             photo=random.choice(PICS),
-            caption=script.START_TXT.format(message.from_user.mention, temp.U_NAME, temp.B_NAME),
+            caption=START_MESSAGE.format(user=message.from_user.mention, bot=temp.B_LINK),
             reply_markup=reply_markup,
             parse_mode='html'
         )
@@ -66,7 +69,7 @@ async def start(client, message):
         btn = [
             [
                 InlineKeyboardButton(
-                    "🔥 JOIИ CHΛИИΞL 🔥", url=invite_link.invite_link
+                    "📢 Join Update Channel 📢", url=invite_link.invite_link
                 )
             ]
         ]
@@ -75,27 +78,27 @@ async def start(client, message):
             btn.append([InlineKeyboardButton("🔁 𝐓𝐫𝐲 𝐀𝐠𝐚𝐢𝐧 🔁", callback_data=f"checksub#{message.command[1]}")])
         await client.send_message(
             chat_id=message.from_user.id,
-            text="**𝑱𝒐𝒊𝒏 𝑶𝒖𝒓 𝑴𝒐𝒗𝒊𝒆 𝑼𝒑𝒅𝒂𝒕𝒆𝒔 𝑪𝒉𝒂𝒏𝒏𝒆𝒍 𝑻𝒐 𝑼𝒔𝒆 𝑻𝒉𝒊𝒔 𝑩𝒐𝒕!**",
+            text=FORCE_SUB_TEXT,
             reply_markup=InlineKeyboardMarkup(btn),
             parse_mode="markdown"
             )
         return
-    if len(message.command) ==2 and message.command[1] in ["subscribe", "error", "okay", "help"]:
+    if len(message.command) ==2 and message.command[1] in ["subscribe", "error", "okay", "help"]:   
         buttons = [[
-            InlineKeyboardButton('⚚ ΛᎠᎠ MΞ ϮԾ YԾUᏒ GᏒԾUᎮ ⚚', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
-            ],[
-            InlineKeyboardButton('💠 CHΛИИΞL 💠', url='https://t.me/MWUpdatez'),
-            InlineKeyboardButton('💠 UᎮDΛTΞS 💠', url='https://t.me/OpusTechz')
+            InlineKeyboardButton('➕ 𝐀𝐃𝐃 𝐌𝐄 𝐓𝐎 𝐘𝐎𝐔𝐑 𝐆𝐑𝐎𝐔𝐏 ➕', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
             ],[      
-            InlineKeyboardButton('♻️ HΞLᎮ ♻️', callback_data='help'),
-            InlineKeyboardButton('♻️ ΛBOUT ♻️', callback_data='about')
+            InlineKeyboardButton('ℹ️ 𝐇𝐄𝐋𝐏', callback_data='help'),
             ],[
-            InlineKeyboardButton('✅ SUBSCᏒIBΞ  ✅', url='https://youtube.com/channel/UCf_dVNrilcT0V2R--HbYpMA')
-        ]]
-        reply_markup = InlineKeyboardMarkup(buttons)
+            InlineKeyboardButton('❈ 𝐎𝐖𝐍𝐄𝐑 ❈', url='https://t.me/HELL_GaM')
+        ]]       
+        reply_markup = InlineKeyboardMarkup(buttons)          
+        await message.reply_chat_action("Typing")
+        m=await message.reply_sticker("CAACAgUAAxkBAAIFNGJSlfOErbkSeLt9SnOniU-58UUBAAKaAAPIlGQULGXh4VzvJWoeBA") 
+        await asyncio.sleep(1)
+        await m.delete()
         await message.reply_photo(
             photo=random.choice(PICS),
-            caption=script.START_TXT.format(message.from_user.mention, temp.U_NAME, temp.B_NAME),
+            caption=START_MESSAGE.format(user=message.from_user.mention, bot=temp.B_LINK),
             reply_markup=reply_markup,
             parse_mode='html'
         )
@@ -239,7 +242,7 @@ async def start(client, message):
         chat_id=message.from_user.id,
         file_id=file_id,
         caption=f_caption,
-        reply_markup=InlineKeyboardMarkup( [ [ InlineKeyboardButton('sᴜʙsᴄʀɪʙᴇ', url='youtube.com/OpusTechz') ] ] ),
+        reply_markup=InlineKeyboardMarkup( [ [ InlineKeyboardButton('MOVIES', url='https://t.me/PrimeFlixMovies'), InlineKeyboardButton('SERIES', url='https://t.me/+KxdQDHo7mM05NzE1') ] ] ),
         protect_content=True if pre == 'filep' else False,
         )
                     
