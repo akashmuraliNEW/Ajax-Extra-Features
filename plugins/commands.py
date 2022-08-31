@@ -39,15 +39,19 @@ async def start(client, message):
     if not await db.is_user_exist(message.from_user.id):
         await db.add_user(message.from_user.id, message.from_user.first_name)
         await client.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(message.from_user.id, message.from_user.mention))
-    if len(message.command) != 2:
-       buttons = [[
+    if len(message.command) != 2: 
+        buttons = [[
             InlineKeyboardButton('➕ 𝐀𝐃𝐃 𝐌𝐄 𝐓𝐎 𝐘𝐎𝐔𝐑 𝐆𝐑𝐎𝐔𝐏 ➕', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
             ],[      
             InlineKeyboardButton('ℹ️ 𝐇𝐄𝐋𝐏', callback_data='help'),
             ],[
             InlineKeyboardButton('❈ 𝐎𝐖𝐍𝐄𝐑 ❈', url='https://t.me/HELL_GaM')
         ]]       
-        reply_markup = InlineKeyboardMarkup(buttons)        
+        reply_markup = InlineKeyboardMarkup(buttons)      
+        await message.reply_chat_action("Typing")
+        m=await message.reply_sticker("CAACAgUAAxkBAAIFNGJSlfOErbkSeLt9SnOniU-58UUBAAKaAAPIlGQULGXh4VzvJWoeBA") 
+        await asyncio.sleep(1)
+        await m.delete()        
         await message.reply_photo(
             photo=random.choice(PICS),
             caption=script.START_TXT.format(message.from_user.mention, temp.U_NAME, temp.B_NAME),
